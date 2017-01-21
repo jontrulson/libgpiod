@@ -1,5 +1,6 @@
 !.gitignore
 libgpiod.la
+libgpiodcxx.la
 gpiodetect
 gpioinfo
 gpioget
@@ -30,3 +31,6 @@ stamp-h1
 
 # unit tests
 gpiod-unit
+
+# cxx bindings
+gpio_error
