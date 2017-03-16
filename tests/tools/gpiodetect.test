@@ -1,3 +1,4 @@
+#!/bin/sh
 #
 # Copyright (C) 2017 Bartosz Golaszewski <bartekgola@gmail.com>
 #
@@ -6,10 +7,6 @@
 # as published by the Free Software Foundation.
 #
 
-SUBDIRS = . unit
+which gpiodetect
 
-if WITH_TOOLS
-
-SUBDIRS += tools
-
-endif
+exit 0

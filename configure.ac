@@ -121,6 +121,7 @@ AC_CONFIG_FILES([Makefile
 		 src/lib/Makefile
 		 src/tools/Makefile
 		 tests/Makefile
-		 tests/unit/Makefile])
+		 tests/unit/Makefile
+		 tests/tools/Makefile])
 
 AC_OUTPUT

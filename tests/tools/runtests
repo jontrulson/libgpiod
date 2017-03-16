@@ -1,0 +1,74 @@
+#!/bin/sh
+#
+# Copyright (C) 2017 Bartosz Golaszewski <bartekgola@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2.1 of the GNU Lesser General Public License
+# as published by the Free Software Foundation.
+#
+
+TOOLS="gpiodetect gpioinfo gpioget gpioset gpiofind gpiomon"
+
+die() {
+	echo "$*"
+	exit 1
+}
+
+check_kernel() {
+	VERSION=$(uname -r | cut -d"." -f1)
+	PATCHLEVEL=$(uname -r | cut -d"." -f2)
+
+	if [ $VERSION -lt 4 ] || [ $PATCHLEVEL -lt 10 ] # FIXME change to 4.11
+	then
+		die "linux kernel version must be at least 4.11 - got $VERSION.$PATCHLEVEL"
+	fi
+}
+
+check_gpio_mockup() {
+	modprobe gpio-mockup gpio_mockup_ranges=-1,8
+	rmmod gpio-mockup
+}
+
+check_tools() {
+	for TOOL in $TOOLS
+	do
+		which $TOOL > /dev/null
+	done
+}
+
+set -e
+
+TESTDIR=$(dirname $0)
+TOOLSDIR="$TESTDIR/../../src/tools/.libs/"
+LIBDIR="$TESTDIR/../../src/lib/.libs/"
+
+export PATH=$TOOLSDIR:$PATH
+export LD_LIBRARY_PATH=$LIBDIR
+
+check_kernel
+check_gpio_mockup
+check_tools
+
+TOTAL=0
+FAILED=0
+
+for TEST in $(ls $TESTDIR/*.test)
+do
+	$TEST
+
+	TOTAL=$(expr $TOTAL + 1)
+
+	if [ $? -ne 0 ]
+	then
+		FAILED=(expr $FAILED + 1)
+	fi
+done
+
+if [ $FAILED -eq 0 ]
+then
+	echo "$TOTAL tests executed - all passed"
+	exit 0
+else
+	echo "$FAILED out of $TOTAL tests failed"
+	exit 1
+fi
